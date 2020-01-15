@@ -4,8 +4,8 @@ lift=input('Enter the maximum lift of the aircraft');
 ew=input('Enter the empty weight of the aircraft');
 nc=input('Enter the no. of colonist');
 r=input('Enter the no. of rounds');
-[h,w]=meshgrid(1:0.1:15,1:0.1:10);
-m=max((nc./(h.*8)),(30./(w.*16.9)));
+[h,w]=meshgrid(1:0.1:16,1:0.1:10);
+m=max((nc./(h.*8)),(nc./(w.*16.9)));
 days=25*power(2,(1.-m));
 wd=((0.5*w)+(0.127*h)+ew)*9.81;
 ws=max((lift-wd)*0.2248,0);
@@ -13,7 +13,7 @@ volume=525.81.*h+624.68.*w;
 score=((nc*days)./(15))+(2.*ws);
 for i=1:10
     for j=1:15
-        if wd(i,j)>165
+        if wd(i,j)>lift
             wd(i,j)=0;
             ws(i,j)=0;
             score(i,j)=0;
@@ -23,8 +23,8 @@ for i=1:10
 end
 surfc(w,h,score)
 shading interp
-xlabel('water bottles');
-ylabel('howler');
+xlabel('No. of Water Bottles/round');
+ylabel('No. of Howlers/round');
 zlabel('score');
 ct=colorbar
 title(ct,'Score')
