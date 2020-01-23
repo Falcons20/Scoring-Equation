@@ -1,26 +1,30 @@
 clc
 clear all
+
 lift=input('Enter the maximum lift of the aircraft');
 ew=input('Enter the empty weight of the aircraft');
-nc=input('Enter the no. of colonist');
+nc=input('Enter the no. of colonist in each CDA');
 r=input('Enter the no. of rounds');
-[h,w]=meshgrid(1:0.1:16,1:0.1:10);
-m=max((nc./(h.*8)),(nc./(w.*16.9)));
+cda=input('Enter the no. of CDAs/round');
+
+[h,w]=meshgrid(1:0.1:16,1:0.1:10);          %Possible combinations of number of howlers and water bottles(16.9fl oz). Iterated at 0.1 intervals for smooth plot.
+
+m=max((cda*nc./(h.*8)),(cda*nc./(w.*16.9)));
 days=25*power(2,(1.-m));
-wd=((0.5*w)+(0.127*h)+ew)*9.81;
-ws=max((lift-wd)*0.2248,0);
-volume=525.81.*h+624.68.*w;
-score=((nc*days)./(15))+(2.*ws);
-for i=1:10
-    for j=1:15
+wd=((0.5*w)+(0.127*h)+ew)*9.81;             %Total weight of the aircraft for each dynamic payload configuration.             
+ws=max(((lift-cda*0.255)-wd)*0.2248,0);     %Static payload calculation for each dynamic payload configuration with lift as the control case.
+[i1,j1]=size(wd);
+for i=1:i1                                  %Discards configurations in which aircraft's weight with dynamic payloads is more than the lift.
+    for j=1:j1
         if wd(i,j)>lift
-            wd(i,j)=0;
+            days(i,j)=0;
             ws(i,j)=0;
-            score(i,j)=0;
             
         end
     end
 end
+score=((nc*days*cda)./(15))+(2.*ws);
+
 surfc(w,h,score)
 shading interp
 xlabel('No. of Water Bottles/round');
